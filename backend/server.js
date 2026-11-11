@@ -10,6 +10,7 @@ app.use(express.json());
 
 app.use('/api/students', require('./routes/students'));
 app.use('/api/courses', require('./routes/courses'));
+app.use('/api/enrollments', require('./routes/enrollments'));
 
 // connect to mongo first, only then start listening
 const PORT = process.env.PORT || 3000;

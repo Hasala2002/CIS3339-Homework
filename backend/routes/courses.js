@@ -1,5 +1,6 @@
 const express = require('express');
 const Course = require('../models/Course');
+const Enrollment = require('../models/Enrollment');
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.delete('/:id', async (req, res) => {
     try {
         const course = await Course.findByIdAndDelete(req.params.id);
         if (!course) return res.status(404).json({ error: 'Course not found' });
+        await Enrollment.deleteMany({ course: course._id });
         res.json(course);
     } catch (err) {
         if (err.name === 'CastError') return res.status(404).json({ error: 'Course not found' });
