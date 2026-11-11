@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors());
@@ -96,8 +98,15 @@ app.post('/delete-student', async (req, res) => {
     }
 });
 
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// connect to mongo first, only then start listening
+const PORT = process.env.PORT || 3000;
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log('Connected to MongoDB');
+        app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
+    })
+    .catch((err) => {
+        console.error('Could not connect to MongoDB:', err.message);
+        process.exit(1);
+    });
