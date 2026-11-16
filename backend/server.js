@@ -32,6 +32,8 @@ const PORT = process.env.PORT || 3000;
 mongoose.connection.on('error', (err) => console.error('MongoDB error:', err.message));
 mongoose
     .connect(process.env.MONGODB_URI)
+    // wait for the unique indexes so duplicates are blocked from the first request
+    .then(() => Promise.all(Object.values(mongoose.models).map((m) => m.init())))
     .then(() => {
         console.log('Connected to MongoDB');
         app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));
