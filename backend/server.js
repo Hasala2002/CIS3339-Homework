@@ -15,6 +15,11 @@ app.use('/api/enrollments', require('./routes/enrollments'));
 // unknown api routes
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 
+// serve the built vue app, and send everything else to index.html so refreshing a route works
+const dist = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(dist));
+app.get('/{*splat}', (req, res) => res.sendFile(path.join(dist, 'index.html')));
+
 // catch-all error handler, mostly for bad json bodies
 app.use((err, req, res, next) => {
     if (err.type === 'entity.parse.failed') return res.status(400).json({ error: 'Invalid JSON' });
