@@ -49,7 +49,7 @@ onMounted(() => run(() => store.fetchStudents(), ''));
   <ul v-else>
     <li v-for="s in store.students" :key="s._id">
       {{ s.name }} (ID {{ s.studentId }}), {{ s.phone }}, {{ s.zip }}
-      <button @click="run(() => store.deleteStudent(s._id), 'Student deleted')">Delete</button>
+      <button :aria-label="`Delete ${s.name}`" @click="run(() => store.deleteStudent(s._id), 'Student deleted')">Delete</button>
     </li>
   </ul>
 </template>

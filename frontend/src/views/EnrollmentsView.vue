@@ -32,6 +32,15 @@ async function enroll() {
   if (rosterCourse.value === courseId.value) await enrollments.fetchRoster(courseId.value);
 }
 
+// don't wipe the enroll message just because the roster changed
+async function loadRoster() {
+  try {
+    await enrollments.fetchRoster(rosterCourse.value);
+  } catch (e) {
+    error.value = e.message;
+  }
+}
+
 // dropdowns come from the backend
 onMounted(() => run(() => Promise.all([students.fetchStudents(), courses.fetchCourses()]), ''));
 </script>
@@ -64,15 +73,18 @@ onMounted(() => run(() => Promise.all([students.fetchStudents(), courses.fetchCo
   </form>
 
   <h2>Course roster</h2>
-  <label>
-    Course
-    <select v-model="rosterCourse" @change="run(() => enrollments.fetchRoster(rosterCourse), '')">
-      <option value="">Select a course</option>
-      <option v-for="c in courses.courses" :key="c._id" :value="c._id">
-        {{ c.courseId }} - {{ c.name }}
-      </option>
-    </select>
-  </label>
+  <!-- in a form just so it lines up like the others -->
+  <form @submit.prevent>
+    <label>
+      Course
+      <select v-model="rosterCourse" @change="loadRoster">
+        <option value="">Select a course</option>
+        <option v-for="c in courses.courses" :key="c._id" :value="c._id">
+          {{ c.courseId }} - {{ c.name }}
+        </option>
+      </select>
+    </label>
+  </form>
 
   <p v-if="enrollments.loading">Loading...</p>
   <p v-else-if="rosterCourse && !enrollments.roster.length">No students enrolled in this course.</p>
